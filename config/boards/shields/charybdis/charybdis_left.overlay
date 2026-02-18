@@ -27,4 +27,7 @@
 };
 
 &spi0 { status = "disabled"; };
-&trackball { status = "disabled"; };
+&trackball { 
+    status = "disabled"; 
+    compatible = "pixart,pmw3610-alt";
+};
