@@ -55,13 +55,18 @@
 
     trackball: trackball@0 {
         status = "okay";
-        compatible = "pixart,pmw3610"; /* Voltou ao normal sem o -alt */
+        compatible = "pixart,pmw3610";
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&pro_micro 18 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; 
-        
-        /* O driver do Inorichi ainda aceita essas configurações antigas */
-        scroll-layers = <1>; 
-        automouse-layer = <2>; 
+    };
+};
+
+/* Listener necessário para o ZMK moderno capturar os movimentos do trackball */
+
+/ {
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
     };
 };
