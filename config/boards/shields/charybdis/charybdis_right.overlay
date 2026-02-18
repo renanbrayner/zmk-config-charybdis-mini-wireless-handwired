@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
- 
 #include "charybdis.dtsi"
 #include "pmw3610.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
@@ -24,7 +23,6 @@
     compatible = "zmk,kscan-gpio-matrix";
     diode-direction = "col2row"; 
 
-    /* Define os pinos das COLUNAS (D1, D0, D2, D3, D4, D5) */
     col-gpios
         = <&pro_micro 1 GPIO_ACTIVE_HIGH>
         , <&pro_micro 0 GPIO_ACTIVE_HIGH>
@@ -34,7 +32,6 @@
         , <&pro_micro 5 GPIO_ACTIVE_HIGH>
         ;
 
-    /* Define os pinos das LINHAS (D6, D7, D8, D9) */
     row-gpios
         = <&pro_micro 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
         , <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
@@ -45,13 +42,12 @@
 
 /* --- CONFIGURAÇÃO DO SENSOR TRACKBALL --- */
 
-/* Força os pinos SPI corretos para nRF52840 (SuperMini/Nice!Nano) */
 &pinctrl {
     spi0_default: spi0_default {
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 0, 17)>,  /* Pino físico P0.17 = D15 (SCK) */
                     <NRF_PSEL(SPIM_MOSI, 0, 20)>, /* Pino físico P0.20 = D16 (SDIO) */
-                    <NRF_PSEL(SPIM_MISO, 0, 22)>; /* Pino físico P0.22 = D14 (MISO - Não usado pelo sensor) */
+                    <NRF_PSEL(SPIM_MISO, 0, 22)>; /* Pino físico P0.22 = D14 (MISO) */
         };
     };
 };
@@ -64,15 +60,20 @@
 
     trackball: trackball@0 {
         status = "okay";
-        compatible = "pixart,pmw3610";
+        compatible = "pixart,pmw3610-alt"; /* CORRIGIDO: Agora usa o sufixo -alt */
         reg = <0>;
         spi-max-frequency = <2000000>;
         
         /* Pino de Interrupção (Motion) no A0 (D18) */
         irq-gpios = <&pro_micro 18 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; 
-        
-        /* Configurações de sensibilidade e scroll (opcional) */
-        scroll-layers = <1>; /* Ativa scroll na layer 1 (opcional) */
-        automouse-layer = <2>; /* Ativa mouse auto na layer 2 (opcional) */
+    };
+};
+
+/* --- NOVO: LISTENER DE INPUT --- */
+/* Necessário no novo driver do Badjeff para que o ZMK entenda o mouse e permita scroll */
+/ {
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
     };
 };
