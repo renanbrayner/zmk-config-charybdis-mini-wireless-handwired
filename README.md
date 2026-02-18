@@ -1,1 +1,1 @@
-# Charybdis Mini ZMK Configuration
+# Charybdis Mini ZMK Configuration Handwired
